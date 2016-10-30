@@ -12,9 +12,41 @@ fastlane add_plugin android_change_app_name
 
 ## About android_change_app_name
 
-Changes the manifest's label attribute (appName).  Stores the original name for revertinng.
+Changes the manifest's android:label attribute (appName).  Stores the original name for revertinng.
 
-**Note to author:** Add a more detailed description about this plugin here. If your plugin contains multiple actions, make sure to mention them here.
+Inupts:
+```
+newName: String  // The new name of your app
+manifest: String (Optional) // The location to your AndroidManifest.xml file.  Default: "app/src/main/AndroidManifest.xml"
+```
+
+Usage:
+
+```
+android_change_app_name(newName: "AwesomeNewName")
+android_change_app_name(newName: "AwesomeNewName", manifest: "path/to/your/manifest.xml")
+```
+
+Sets these keys
+
+`ANDROID_CHANGE_APP_NAME_ORIGINAL_NAME : String` = The original value from android:label.
+
+## About android_change_app_name_revert
+
+Reverts the manifest's android:label attribute (appName) to the prior ANDROID_CHANGE_APP_NAME_ORIGINAL_NAME value.  Errors if ANDROID_CHANGE_APP_NAME_ORIGINAL_NAME is not set.
+
+Inupts:
+```
+manifest: String (Optional) // The location to your AndroidManifest.xml file.  Default: "app/src/main/AndroidManifest.xml"
+```
+
+Usage:
+
+```
+android_change_app_name_revert()
+android_change_app_name_revert(manifest: "path/to/your/manifest.xml")
+
+```
 
 ## Example
 
