@@ -7,16 +7,8 @@ module Fastlane
       def self.run(params)
         require 'nokogiri'
 
-        revertChange = params[:revertChange]
-        oldName = Actions.lane_context[SharedValues::ANDROID_CHANGE_APP_NAME_ORIGINAL_NAME]
-
-        if revertChange and oldName.to_s.strip.length != 0
-          newName = oldName
-          manifest = params[:manifest]
-        else
-          newName = params[:newName]
-          manifest = params[:manifest]
-        end
+        newName = params[:newName]
+        manifest = params[:manifest]
 
         doc = File.open(manifest) { |f|
           @doc = Nokogiri::XML(f)
@@ -26,6 +18,8 @@ module Fastlane
           @doc.css("application").each do |response_node|
             originalName = response_node["android:label"]
             response_node["android:label"] = newName
+
+            UI.message("Updating app name to: #{newName}")
           end
 
           Actions.lane_context[SharedValues::ANDROID_CHANGE_APP_NAME_ORIGINAL_NAME] = originalName
@@ -63,12 +57,7 @@ module Fastlane
                                description: "Optional custom location for AndroidManifest.xml",
                                   optional: false,
                                       type: String,
-                             default_value: "app/src/main/AndroidManifest.xml"),
-          FastlaneCore::ConfigItem.new(key: :revertChange,
-                                  env_name: "",
-                               description: "if 'true' will use ANDROID_CHANGE_APP_NAME_ORIGINAL_NAME to reset the app name",
-                                  optional: true,
-                             default_value: false)
+                             default_value: "app/src/main/AndroidManifest.xml")
         ]
       end
 
@@ -99,8 +88,8 @@ module Fastlane
           @doc = Nokogiri::XML(f)
 
           @doc.css("application").each do |response_node|
-            originalName = response_node["android:label"]
             response_node["android:label"] = oldName
+            UI.message("Reverting app name to: #{oldName}")
           end
 
           File.write(manifest, @doc.to_xml)
